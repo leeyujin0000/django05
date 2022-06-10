@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block con %}
+    <div class="container mt-5 mb-5">
+        <h1>투표소</h1>
+        <div class="text-end">
+            <a href="{% url 'vote:create' %}" class="btn btn-dark">토픽생성</a>
+        </div>
+        <div class="row">
+            {% for i in tset %}
+                <div class="col-lg-4">
+                    <div class="card">
+                        <img src="{{ i.maker.getpic }}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ i.subject }}</h5>
+                            <p class="card-text">{{ i.summary }}</p>
+                            {% if user in i.voter.all %}
+                                <a href="{% url 'vote:detail' i.id %}" class="btn btn-dark">결과보기</a>
+                            {% else %}
+                                <a href="{% url 'vote:detail' i.id %}" class="btn btn-outline-dark">투표하기</a>
+                            {% endif %}
+                            {% if user == i.maker %}
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#test{{forloop.counter}}">
+                                    삭제하기
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for i in tset %}
+        <div class="modal fade" id="test{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">토픽 삭제 알림</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        "{{ i.subject }}"는(은) {{ i.voter.count }}명이 참여한 투표입니다.
+                        삭제하시겠습니까?
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-secondary" data-bs-dismiss="modal">취소</a>
+                        <a href="{% url 'vote:delete' i.id %}" class="btn btn-danger">삭제</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
